@@ -6,9 +6,11 @@ namespace SnatchItAPI.Controllers;
 [Route("[controller]")]
 public class RecordController : ControllerBase
 {
-    public RecordController()
+    DataContextDapper _dapper;
+    public RecordController(IConfiguration config)
     {
-
+        _dapper = new DataContextDapper(config);
+        Console.WriteLine(config.GetConnectionString("DefaultConnection"));
     }
 
     [HttpGet("getRecords")]
