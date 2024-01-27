@@ -12,10 +12,10 @@ public class RecordController : ControllerBase
     }
 
     [HttpGet("getRecords")]
-    public string[] GetRecords(){
+    public string[] GetRecords(string additionalBird="Default Bird"){
 
         string[] records = [
-            "Bird", "Birdie Bird", "Byrd's bird"
+            "Bird", "Birdie Bird", "Byrd's bird", additionalBird
         ];
         return records;
     }
