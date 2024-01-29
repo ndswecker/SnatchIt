@@ -24,5 +24,11 @@ namespace SnatchItAPI
             IDbConnection dbConnection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
             return dbConnection.QuerySingle<T>(sql);
         }
+
+        public bool ExcecuteSql(string sql) 
+        {
+            IDbConnection dbConnection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
+            return dbConnection.Execute(sql) > 0;
+        }
     }
 }

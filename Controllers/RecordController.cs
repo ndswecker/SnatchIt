@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using SnatchItAPI.Models;
+using System.IO;
 
 namespace SnatchItAPI.Controllers;
 
@@ -13,12 +15,18 @@ public class RecordController : ControllerBase
         Console.WriteLine(config.GetConnectionString("DefaultConnection"));
     }
 
-    [HttpGet("getRecords")]
-    public string[] GetRecords(string additionalBird="Default Bird"){
+    [HttpGet("TestConnection")]
+    public DateTime TestConnection()
+    {
+        string sql = System.IO.File.ReadAllText("SqlQueries/GetAllCore.sql");
+        Console.WriteLine(sql);
+        return _dapper.LoadDataSingle<DateTime>("SELECT GETDATE()");
+    }
 
-        string[] records = [
-            "Bird", "Birdie Bird", "Byrd's bird", additionalBird
-        ];
-        return records;
+    [HttpGet("getRecords")]
+    public IEnumerable<CaptureRecord> GetRecords(){
+        string sql = System.IO.File.ReadAllText("SqlQueries/GetAllCore.sql");
+        Console.WriteLine(sql);
+        return _dapper.LoadData<CaptureRecord>(sql);
     }
 }
