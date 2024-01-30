@@ -8,6 +8,7 @@ namespace SnatchItAPI.Controllers;
 [Route("[controller]")]
 public class RecordController : ControllerBase
 {
+
     DataContextDapper _dapper;
     public RecordController(IConfiguration config)
     {
@@ -18,13 +19,11 @@ public class RecordController : ControllerBase
     [HttpGet("TestConnection")]
     public DateTime TestConnection()
     {
-        string sql = System.IO.File.ReadAllText("SqlQueries/GetAllCore.sql");
-        Console.WriteLine(sql);
         return _dapper.LoadDataSingle<DateTime>("SELECT GETDATE()");
     }
 
     [HttpGet("getRecords")]
-    public IEnumerable<CaptureRecord> GetRecords(){
+    public IEnumerable<CaptureRecord> GetRecords(int sheetId = 0){
         string sql = System.IO.File.ReadAllText("SqlQueries/GetAllCore.sql");
         Console.WriteLine(sql);
         return _dapper.LoadData<CaptureRecord>(sql);
