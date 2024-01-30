@@ -1,5 +1,7 @@
+using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using SnatchItAPI.Models;
+using System.Data;
 using System.IO;
 
 namespace SnatchItAPI.Controllers;
@@ -24,8 +26,27 @@ public class RecordController : ControllerBase
 
     [HttpGet("getRecords")]
     public IEnumerable<CaptureRecord> GetRecords(int sheetId = 0){
-        string sql = System.IO.File.ReadAllText("SqlQueries/GetAllCore.sql");
+
+
+        DynamicParameters sqlParameters = new DynamicParameters();
+
+        // string sql = System.IO.File.ReadAllText("SqlQueries/GetAllCore.sql");
+        string sql = 
+            " SELECT * FROM MicroAgeSchema.Core AS Core ";
+            
         Console.WriteLine(sql);
-        return _dapper.LoadData<CaptureRecord>(sql);
+
+        if (sheetId != 0)
+        {
+            sql += " WHERE (@RecordId IS NULL OR Core.SheetId = @RecordId);";
+            sqlParameters.Add("@RecordId", sheetId, DbType.Int32);
+        }
+        else
+        {
+            return _dapper.LoadData<CaptureRecord>(sql);
+        }
+
+        IEnumerable<CaptureRecord> records = _dapper.LoadDataWithParameters<CaptureRecord>(sql, sqlParameters);
+        return records;
     }
 }
