@@ -60,14 +60,12 @@ public class RecordController : ControllerBase
         DynamicParameters sqlParameters = new DynamicParameters();
 
         string sql = 
-            "INSERT INTO MicroAgeSchema.CORE ([BandNumber],[BandSize],[Scribe]," +
-            "[SpeciesCommon],[SpeciesAlpha],[SheetDate], [Station]," +
-            "[Net],[WingChord],[Sex],[AgeYear],[AgeWRP],[BodyMass]," +
-            "[Notes] ) VALUES (@BandNumber = @BandNumberParam, @BandSize = @BandSizeParam, " + 
-            "@Scribe = @ScribeParam, @SpeciesCommon = @SpeciesCommonParam, @SpeciesAlpha = @SpeciesAlphaParam, " +
-            "@SheetDate = @SheetDateParam, @Station = @StationParam, @Net = @NetParam, " +
-            "@WingChord = @WingChordParam, @Sex = @SexParam, @AgeYear = @AgeYearParam, " +
-            "@AgeWRP = @AgeWRPParam, @BodyMass = @BodyMassParam, @Notes = @NotesParam)" ;
+        "INSERT INTO MicroAgeSchema.CORE ([BandNumber],[BandSize],[Scribe]," +
+        "[SpeciesCommon],[SpeciesAlpha],[SheetDate], [Station]," +
+        "[Net],[WingChord],[Sex],[AgeYear],[AgeWRP],[BodyMass]," +
+        "[Notes] ) VALUES (@BandNumberParam, @BandSizeParam, @ScribeParam, " + 
+        "@SpeciesCommonParam, @SpeciesAlphaParam, @SheetDateParam, @StationParam, @NetParam, " +
+        "@WingChordParam, @SexParam, @AgeYearParam, @AgeWRPParam, @BodyMassParam, @NotesParam)";
 
         sqlParameters.Add("@BandNumberParam", record.BandNumber, DbType.Int32);
         sqlParameters.Add("@BandSizeParam", record.BandSize, DbType.String);
