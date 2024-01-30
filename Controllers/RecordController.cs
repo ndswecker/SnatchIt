@@ -15,7 +15,6 @@ public class RecordController : ControllerBase
     public RecordController(IConfiguration config)
     {
         _dapper = new DataContextDapper(config);
-        Console.WriteLine(config.GetConnectionString("DefaultConnection"));
     }
 
     [HttpGet("TestConnection")]
