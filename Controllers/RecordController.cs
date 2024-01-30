@@ -30,11 +30,8 @@ public class RecordController : ControllerBase
 
         DynamicParameters sqlParameters = new DynamicParameters();
 
-        // string sql = System.IO.File.ReadAllText("SqlQueries/GetAllCore.sql");
         string sql = 
             " SELECT * FROM MicroAgeSchema.Core AS Core ";
-            
-        Console.WriteLine(sql);
 
         if (sheetId != 0)
         {
