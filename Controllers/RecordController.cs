@@ -1,5 +1,6 @@
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
+using SnatchItAPI.Data;
 using SnatchItAPI.Models;
 using System.Data;
 using System.IO;
@@ -17,12 +18,26 @@ public class RecordController : ControllerBase
         _dapper = new DataContextDapper(config);
     }
 
+    // <summary>
+    // Tests the connection to the database by retrieving the current server date and time.
+    // </summary>
+    // <returns>The current date and time from the database server.</returns>
     [HttpGet("TestConnection")]
     public DateTime TestConnection()
     {
         return _dapper.LoadDataSingle<DateTime>("SELECT GETDATE()");
     }
 
+
+    // <summary>
+    // Retrieves a collection of CaptureRecord objects from the database.
+    // </summary>
+    // <remarks>
+    // This method fetches all records from the MicroAgeSchema.Core table if no specific sheetId is provided.
+    // If a sheetId is specified, it filters the records to include only those associated with the given sheetId.
+    // </remarks>
+    // <param name="sheetId">The ID of the sheet used to filter records. If 0 or not provided, all records are retrieved.</param>
+    // <returns>An IEnumerable of CaptureRecord objects, either filtered by sheetId or containing all records.</returns>
     [HttpGet("getRecords")]
     public IEnumerable<CaptureRecord> GetRecords(int sheetId = 0){
 
@@ -46,26 +61,26 @@ public class RecordController : ControllerBase
         return records;
     }
 
-    [HttpPut]
-    public IActionResult EditRecord()
+    [HttpPut("EditRecord")]
+    public IActionResult EditRecord(CaptureRecordDto record)
     {
         string sql = 
             " ";
         return Ok();
     }
 
-    [HttpPost]
+    [HttpPost("AddRecord")]
     public IActionResult AddRecord(CaptureRecordDto record)
     {
         DynamicParameters sqlParameters = new DynamicParameters();
 
         string sql = 
-        "INSERT INTO MicroAgeSchema.CORE ([BandNumber],[BandSize],[Scribe]," +
-        "[SpeciesCommon],[SpeciesAlpha],[SheetDate], [Station]," +
-        "[Net],[WingChord],[Sex],[AgeYear],[AgeWRP],[BodyMass]," +
-        "[Notes] ) VALUES (@BandNumberParam, @BandSizeParam, @ScribeParam, " + 
-        "@SpeciesCommonParam, @SpeciesAlphaParam, @SheetDateParam, @StationParam, @NetParam, " +
-        "@WingChordParam, @SexParam, @AgeYearParam, @AgeWRPParam, @BodyMassParam, @NotesParam)";
+            "INSERT INTO MicroAgeSchema.CORE ([BandNumber],[BandSize],[Scribe]," +
+            "[SpeciesCommon],[SpeciesAlpha],[SheetDate], [Station]," +
+            "[Net],[WingChord],[Sex],[AgeYear],[AgeWRP],[BodyMass]," +
+            "[Notes] ) VALUES (@BandNumberParam, @BandSizeParam, @ScribeParam, " + 
+            "@SpeciesCommonParam, @SpeciesAlphaParam, @SheetDateParam, @StationParam, @NetParam, " +
+            "@WingChordParam, @SexParam, @AgeYearParam, @AgeWRPParam, @BodyMassParam, @NotesParam)";
 
         sqlParameters.Add("@BandNumberParam", record.BandNumber, DbType.Int32);
         sqlParameters.Add("@BandSizeParam", record.BandSize, DbType.String);
@@ -86,4 +101,20 @@ public class RecordController : ControllerBase
         _dapper.ExecuteSqlWithParameters(sql, sqlParameters);
         return Ok();
     }
+
+    [HttpDelete("DeleteRecord")]
+    public IActionResult DeleteRecord(int recordId)
+    {
+        DynamicParameters sqlParameters = new DynamicParameters();
+        sqlParameters.Add("@SheetIdParam", recordId, DbType.Int32);
+        string sql = 
+            "DELETE FROM MicroAgeSchema.Core WHERE SheetId = @SheetIdParam;";
+        
+        if (_dapper.ExecuteSqlWithParameters(sql, sqlParameters))
+        {
+            return Ok($"Removed record {recordId} from Core table");
+        }
+
+        return NotFound($"Failed to delete record {recordId.ToString()}, record by that id may not exist" );
+    } 
 }

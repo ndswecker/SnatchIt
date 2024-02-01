@@ -2,7 +2,7 @@ using System.Data;
 using Dapper;
 using Microsoft.Data.SqlClient;
 
-namespace SnatchItAPI
+namespace SnatchItAPI.Data
 {
     class DataContextDapper
     {
