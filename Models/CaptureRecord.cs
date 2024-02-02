@@ -1,6 +1,6 @@
 namespace SnatchItAPI.Models
 {
-    public partial class CaptureRecord
+    public partial class CaptureRecord 
     {
         public int SheetId { get; set; }
         public int BandNumber { get; set; }

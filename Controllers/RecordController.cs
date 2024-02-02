@@ -62,11 +62,50 @@ public class RecordController : ControllerBase
     }
 
     [HttpPut("EditRecord")]
-    public IActionResult EditRecord(CaptureRecordDto record)
+    public IActionResult EditRecord(CaptureRecord record)
     {
         string sql = 
-            " ";
-        return Ok();
+            @"UPDATE MicroAgeSchema.Core
+            SET BandSize = @BandSizeParam,
+                Scribe = @ScribeParam,
+                SpeciesCommon = @SpeciesCommonParam,
+                SpeciesAlpha = @SpeciesAlphaParam,
+                SheetDate = @SheetDateParam,
+                Station = @StationParam,
+                Net = @NetParam,
+                WingChord = @WingChordParam,
+                Sex = @SexParam,
+                AgeYear = @AgeYearParam,
+                AgeWRP = @AgeWRPParam,
+                BodyMass = @BodyMassParam,
+                Notes = @NotesParam
+            WHERE SheetId = @SheetIdParam;";
+
+        DynamicParameters sqlParameters = new DynamicParameters();
+        sqlParameters = new DynamicParameters();
+
+        sqlParameters.Add("@BandSizeParam", record.BandSize, DbType.String);
+        sqlParameters.Add("@ScribeParam", record.Scribe, DbType.String);
+        sqlParameters.Add("@SpeciesCommonParam", record.SpeciesCommon, DbType.String);
+        sqlParameters.Add("@SpeciesAlphaParam", record.SpeciesAlpha, DbType.String);
+        sqlParameters.Add("@SheetDateParam", record.SheetDate, DbType.DateTime);
+        sqlParameters.Add("@StationParam", record.Station, DbType.String);
+        sqlParameters.Add("@NetParam", record.Net, DbType.String);
+        sqlParameters.Add("@WingChordParam", record.WingChord, DbType.Int32);
+        sqlParameters.Add("@SexParam", record.Sex, DbType.StringFixedLength);
+        sqlParameters.Add("@AgeYearParam", record.AgeYear, DbType.String);
+        sqlParameters.Add("@AgeWRPParam", record.AgeWRP, DbType.String);
+        sqlParameters.Add("@BodyMassParam", record.BodyMass, DbType.Decimal);
+        sqlParameters.Add("@NotesParam", record.Notes, DbType.String);
+        sqlParameters.Add("@SheetIdParam", record.SheetId);
+
+        if (_dapper.ExecuteSqlWithParameters(sql, sqlParameters))
+        {
+            return Ok($"Record {record.SheetId} has been successfully updated");
+        }
+        else{
+            return NotFound($"Unable to update record {record.SheetId}");
+        }
     }
 
     [HttpPost("AddRecord")]
