@@ -121,20 +121,22 @@ public class RecordController : ControllerBase
             "@SpeciesCommonParam, @SpeciesAlphaParam, @SheetDateParam, @StationParam, @NetParam, " +
             "@WingChordParam, @SexParam, @AgeYearParam, @AgeWRPParam, @BodyMassParam, @NotesParam)";
 
-        sqlParameters.Add("@BandNumberParam", record.BandNumber, DbType.Int32);
-        sqlParameters.Add("@BandSizeParam", record.BandSize, DbType.String);
-        sqlParameters.Add("@ScribeParam", record.Scribe, DbType.String);
-        sqlParameters.Add("@SpeciesCommonParam", record.SpeciesCommon, DbType.String);
-        sqlParameters.Add("@SpeciesAlphaParam", record.SpeciesAlpha, DbType.String);
-        sqlParameters.Add("@SheetDateParam", record.SheetDate, DbType.DateTime);
-        sqlParameters.Add("@StationParam", record.Station, DbType.String);
-        sqlParameters.Add("@NetParam", record.Net, DbType.String);
-        sqlParameters.Add("@WingChordParam", record.WingChord, DbType.Int32);
-        sqlParameters.Add("@SexParam", record.Sex, DbType.StringFixedLength);
-        sqlParameters.Add("@AgeYearParam", record.AgeYear, DbType.String);
-        sqlParameters.Add("@AgeWRPParam", record.AgeWRP, DbType.String);
-        sqlParameters.Add("@BodyMassParam", record.BodyMass, DbType.Decimal);
-        sqlParameters.Add("@NotesParam", record.Notes, DbType.String);
+        // sqlParameters.Add("@BandNumberParam", record.BandNumber, DbType.Int32);
+        // sqlParameters.Add("@BandSizeParam", record.BandSize, DbType.String);
+        // sqlParameters.Add("@ScribeParam", record.Scribe, DbType.String);
+        // sqlParameters.Add("@SpeciesCommonParam", record.SpeciesCommon, DbType.String);
+        // sqlParameters.Add("@SpeciesAlphaParam", record.SpeciesAlpha, DbType.String);
+        // sqlParameters.Add("@SheetDateParam", record.SheetDate, DbType.DateTime);
+        // sqlParameters.Add("@StationParam", record.Station, DbType.String);
+        // sqlParameters.Add("@NetParam", record.Net, DbType.String);
+        // sqlParameters.Add("@WingChordParam", record.WingChord, DbType.Int32);
+        // sqlParameters.Add("@SexParam", record.Sex, DbType.StringFixedLength);
+        // sqlParameters.Add("@AgeYearParam", record.AgeYear, DbType.String);
+        // sqlParameters.Add("@AgeWRPParam", record.AgeWRP, DbType.String);
+        // sqlParameters.Add("@BodyMassParam", record.BodyMass, DbType.Decimal);
+        // sqlParameters.Add("@NotesParam", record.Notes, DbType.String);
+
+        addCoreFields(sqlParameters, record);
 
 
         _dapper.ExecuteSqlWithParameters(sql, sqlParameters);
@@ -155,5 +157,23 @@ public class RecordController : ControllerBase
         }
 
         return NotFound($"Failed to delete record {recordId.ToString()}, record by that id may not exist" );
+    }
+
+    private void addCoreFields(DynamicParameters sqlParameters, CaptureRecordDto record)
+    {
+        sqlParameters.Add("@BandNumberParam", record.BandNumber, DbType.Int32);
+        sqlParameters.Add("@BandSizeParam", record.BandSize, DbType.String);
+        sqlParameters.Add("@ScribeParam", record.Scribe, DbType.String);
+        sqlParameters.Add("@SpeciesCommonParam", record.SpeciesCommon, DbType.String);
+        sqlParameters.Add("@SpeciesAlphaParam", record.SpeciesAlpha, DbType.String);
+        sqlParameters.Add("@SheetDateParam", record.SheetDate, DbType.DateTime);
+        sqlParameters.Add("@StationParam", record.Station, DbType.String);
+        sqlParameters.Add("@NetParam", record.Net, DbType.String);
+        sqlParameters.Add("@WingChordParam", record.WingChord, DbType.Int32);
+        sqlParameters.Add("@SexParam", record.Sex, DbType.StringFixedLength);
+        sqlParameters.Add("@AgeYearParam", record.AgeYear, DbType.String);
+        sqlParameters.Add("@AgeWRPParam", record.AgeWRP, DbType.String);
+        sqlParameters.Add("@BodyMassParam", record.BodyMass, DbType.Decimal);
+        sqlParameters.Add("@NotesParam", record.Notes, DbType.String);
     } 
 }
