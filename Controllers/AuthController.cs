@@ -17,7 +17,11 @@ namespace SnatchItAPI.Controllers
         [HttpPost("Register")]
         public IActionResult Register(BanderForRegistrationDto banderForRegistration)
         {
-            return Ok("You have registered");
+            if (string.Equals(banderForRegistration.Password, banderForRegistration.PasswordConfirm) )
+            {
+                return Ok("You have registered");
+            }
+            return NotFound("Failure to register new bander");
         }
 
         [HttpPost("Login")]
