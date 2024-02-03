@@ -1,8 +1,8 @@
 namespace SnatchItAPI.Models
 {
-    public partial class BanderForRegistration : BanderDto
+    public partial class BanderForRegistrationDto : BanderForLoginDto
     {
-        string PasswordConfirm { get; set;} = "";
+        public string PasswordConfirm { get; set;} = "";
 
     }
 }
