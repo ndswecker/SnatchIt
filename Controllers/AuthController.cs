@@ -38,16 +38,7 @@ namespace SnatchItAPI.Controllers
                         rng.GetNonZeroBytes(passwordSalt);
                     }
 
-                    string passwordSaltPlusString = _config.GetSection("AppSettings:PasswordKey").Value +
-                        Convert.ToBase64String(passwordSalt); 
-
-                    byte[] passwordHash = KeyDerivation.Pbkdf2(
-                        password: banderForRegistration.Password,
-                        salt: Encoding.ASCII.GetBytes(passwordSaltPlusString),
-                        prf: KeyDerivationPrf.HMACSHA256,
-                        iterationCount: 25600,
-                        numBytesRequested: 256 / 8
-                    );
+                    byte[] passwordHash = GetPasswordHash(banderForRegistration.Password, passwordSalt);
 
                     DynamicParameters insertParameters = new DynamicParameters();
                     string insertBanderSql = @"INSERT INTO MicroAgeSchema.Auth 
@@ -73,6 +64,24 @@ namespace SnatchItAPI.Controllers
         [HttpPost("Login")]
         public IActionResult Login(BanderForLoginDto banderForLogin)
         {
+            DynamicParameters parameters = new DynamicParameters();
+            string sqlForHashAndSalt = @"SELECT [PasswordHash], [PasswordSalt] 
+                FROM MicroAgeSchema.Auth WHERE Email = @EmailParam";
+            parameters.Add("@EmailParam", banderForLogin.Email, DbType.String);
+
+            BanderForLoginConfirmation banderForConfirmation = _dapper.LoadDataSingleWithParameters<BanderForLoginConfirmation>(sqlForHashAndSalt, parameters);
+
+            byte[] passwordHash = GetPasswordHash(banderForLogin.Password, banderForConfirmation.PasswordSalt);
+
+            for (int i = 0; i < passwordHash.Length; i++)
+            {
+                Console.WriteLine(passwordHash[i] + "-" + banderForConfirmation.PasswordHash[i]);
+                if (passwordHash[i] != banderForConfirmation.PasswordHash[i])
+                {
+                    return StatusCode(403, "Incorrect password. Failure to log in.");
+                }
+            }
+
             return Ok("You have Logged in");
         }
 
@@ -98,18 +107,18 @@ namespace SnatchItAPI.Controllers
         //     return _dapper.ExecuteSqlWithParameters(sqlAddAuth, sqlParameters);
         // }
 
-        // public byte[] GetPasswordHash(string password, byte[] passwordSalt)
-        // {
-        //     string passwordSaltPlusString = _config.GetSection("AppSettings:PasswordKey").Value +
-        //         Convert.ToBase64String(passwordSalt);
+        private byte[] GetPasswordHash(string password, byte[] passwordSalt)
+        {
+            string passwordSaltPlusString = _config.GetSection("AppSettings:PasswordKey").Value +
+                Convert.ToBase64String(passwordSalt);
 
-        //     return KeyDerivation.Pbkdf2(
-        //         password: password,
-        //         salt: Encoding.ASCII.GetBytes(passwordSaltPlusString),
-        //         prf: KeyDerivationPrf.HMACSHA256,
-        //         iterationCount: 1000000,
-        //         numBytesRequested: 256 / 8
-        //     );
-        // }
+            return KeyDerivation.Pbkdf2(
+                password: password,
+                salt: Encoding.ASCII.GetBytes(passwordSaltPlusString),
+                prf: KeyDerivationPrf.HMACSHA256,
+                iterationCount: 1000000,
+                numBytesRequested: 256 / 8
+            );
+        }
     }
 }
