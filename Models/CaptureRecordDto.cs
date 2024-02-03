@@ -4,6 +4,7 @@ namespace SnatchItAPI.Models
     {
         public int BandNumber { get; set; }
         public string BandSize { get; set; } = "";
+        public string Bander { get; set; } = "";
         public string Scribe { get; set; } = "";
         public string SpeciesCommon { get; set; } = "";
         public string SpeciesAlpha { get; set; } = "";

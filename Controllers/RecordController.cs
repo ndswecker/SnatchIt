@@ -67,6 +67,7 @@ public class RecordController : ControllerBase
         string sql = 
             @"UPDATE MicroAgeSchema.Core
             SET BandSize = @BandSizeParam,
+                Bander = @BanderParam,
                 Scribe = @ScribeParam,
                 SpeciesCommon = @SpeciesCommonParam,
                 SpeciesAlpha = @SpeciesAlphaParam,
@@ -109,7 +110,7 @@ public class RecordController : ControllerBase
             "INSERT INTO MicroAgeSchema.CORE ([BandNumber],[BandSize],[Scribe]," +
             "[SpeciesCommon],[SpeciesAlpha],[SheetDate], [Station]," +
             "[Net],[WingChord],[Sex],[AgeYear],[AgeWRP],[BodyMass]," +
-            "[Notes] ) VALUES (@BandNumberParam, @BandSizeParam, @ScribeParam, " + 
+            "[Notes] ) VALUES (@BandNumberParam, @BandSizeParam, @BanderParam, @ScribeParam, " + 
             "@SpeciesCommonParam, @SpeciesAlphaParam, @SheetDateParam, @StationParam, @NetParam, " +
             "@WingChordParam, @SexParam, @AgeYearParam, @AgeWRPParam, @BodyMassParam, @NotesParam)";
 
@@ -139,6 +140,7 @@ public class RecordController : ControllerBase
     {
         sqlParameters.Add("@BandNumberParam", record.BandNumber, DbType.Int32);
         sqlParameters.Add("@BandSizeParam", record.BandSize, DbType.String);
+        sqlParameters.Add("@BanderParam", record.Bander, DbType.String);
         sqlParameters.Add("@ScribeParam", record.Scribe, DbType.String);
         sqlParameters.Add("@SpeciesCommonParam", record.SpeciesCommon, DbType.String);
         sqlParameters.Add("@SpeciesAlphaParam", record.SpeciesAlpha, DbType.String);
