@@ -32,37 +32,29 @@ namespace SnatchItAPI.Controllers
 
                 if (existingBanders.Count() == 0)
                 {
-                    byte[] passwordSalt = new byte[128 / 8];
-                    using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+                    // byte[] passwordSalt = new byte[128 / 8];
+                    // using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+                    // {
+                    //     rng.GetNonZeroBytes(passwordSalt);
+                    // }
+
+                    // byte[] passwordHash = GetPasswordHash(banderForRegistration.Password, passwordSalt);
+
+                    // DynamicParameters insertParameters = new DynamicParameters();
+                    // string insertBanderSql = @"INSERT INTO MicroAgeSchema.Auth 
+                    //     ([Email], [PasswordHash], [PasswordSalt]) 
+                    //     VALUES (
+                    //         @EmailParam, @PasswordHashParam, @PasswordSaltParam
+                    //     )";
+
+                    // insertParameters.Add("@EmailParam", banderForRegistration.Email, DbType.String);
+                    // insertParameters.Add("@PasswordHashParam", passwordHash, DbType.Binary);
+                    // insertParameters.Add("@PasswordSaltParam", passwordSalt, DbType.Binary);
+
+                    // if (_dapper.ExecuteSqlWithParameters(insertBanderSql, insertParameters))
+                    if (InsertNewAuth(banderForRegistration))
                     {
-                        rng.GetNonZeroBytes(passwordSalt);
-                    }
-
-                    byte[] passwordHash = GetPasswordHash(banderForRegistration.Password, passwordSalt);
-
-                    DynamicParameters insertParameters = new DynamicParameters();
-                    string insertBanderSql = @"INSERT INTO MicroAgeSchema.Auth 
-                        ([Email], [PasswordHash], [PasswordSalt]) 
-                        VALUES (
-                            @EmailParam, @PasswordHashParam, @PasswordSaltParam
-                        )";
-
-                    insertParameters.Add("@EmailParam", banderForRegistration.Email, DbType.String);
-                    insertParameters.Add("@PasswordHashParam", passwordHash, DbType.Binary);
-                    insertParameters.Add("@PasswordSaltParam", passwordSalt, DbType.Binary);
-
-                    if (_dapper.ExecuteSqlWithParameters(insertBanderSql, insertParameters))
-                    {
-                        DynamicParameters insertBanderParameters = new DynamicParameters();
-                        string addBanderSql = @"INSERT INTO MicroAgeSchema.Banders 
-                        (FirstName, LastName, Email) 
-                        VALUES (@FirstNameParam, @LastNameParam, @EmailParam)";
-
-                        insertBanderParameters.Add("@FirstNameParam", banderForRegistration.FirstName, DbType.String);
-                        insertBanderParameters.Add("@LastNameParam", banderForRegistration.LastName, DbType.String);
-                        insertBanderParameters.Add("@EmailParam", banderForRegistration.Email, DbType.String);
-
-                        if (_dapper.ExecuteSqlWithParameters(addBanderSql, insertBanderParameters))
+                        if (InsertNewBander(banderForRegistration))
                         {
                             return Ok($"Thank you {banderForRegistration.Email}! You are now registered :)");
                         }
@@ -134,6 +126,53 @@ namespace SnatchItAPI.Controllers
                 iterationCount: 1000000,
                 numBytesRequested: 256 / 8
             );
+        }
+
+        private bool InsertNewBander(BanderForRegistrationDto banderForRegistration)
+        {
+            DynamicParameters insertBanderParameters = new DynamicParameters();
+            string addBanderSql = @"INSERT INTO MicroAgeSchema.Banders 
+            (FirstName, LastName, Email) 
+            VALUES (@FirstNameParam, @LastNameParam, @EmailParam)";
+
+            insertBanderParameters.Add("@FirstNameParam", banderForRegistration.FirstName, DbType.String);
+            insertBanderParameters.Add("@LastNameParam", banderForRegistration.LastName, DbType.String);
+            insertBanderParameters.Add("@EmailParam", banderForRegistration.Email, DbType.String);
+
+            if (_dapper.ExecuteSqlWithParameters(addBanderSql, insertBanderParameters))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private bool InsertNewAuth(BanderForRegistrationDto banderForRegistration){
+
+            byte[] passwordSalt = new byte[128 / 8];
+            using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+            {
+                rng.GetNonZeroBytes(passwordSalt);
+            }
+
+            byte[] passwordHash = GetPasswordHash(banderForRegistration.Password, passwordSalt);
+
+            DynamicParameters insertParameters = new DynamicParameters();
+            string insertBanderSql = @"INSERT INTO MicroAgeSchema.Auth 
+                ([Email], [PasswordHash], [PasswordSalt]) 
+                VALUES (
+                    @EmailParam, @PasswordHashParam, @PasswordSaltParam
+                )";
+
+            insertParameters.Add("@EmailParam", banderForRegistration.Email, DbType.String);
+            insertParameters.Add("@PasswordHashParam", passwordHash, DbType.Binary);
+            insertParameters.Add("@PasswordSaltParam", passwordSalt, DbType.Binary);
+
+            if (_dapper.ExecuteSqlWithParameters(insertBanderSql, insertParameters))
+            {
+                return true;
+            }
+
+            return false;
         }
 
     }
