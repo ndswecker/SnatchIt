@@ -175,5 +175,10 @@ namespace SnatchItAPI.Controllers
             return false;
         }
 
+        private string CreateToken(int userId)
+        {
+            return "";
+        }
+
     }
 }
