@@ -46,15 +46,30 @@ namespace SnatchItAPI.Controllers
                         VALUES (
                             @EmailParam, @PasswordHashParam, @PasswordSaltParam
                         )";
+
                     insertParameters.Add("@EmailParam", banderForRegistration.Email, DbType.String);
                     insertParameters.Add("@PasswordHashParam", passwordHash, DbType.Binary);
                     insertParameters.Add("@PasswordSaltParam", passwordSalt, DbType.Binary);
 
                     if (_dapper.ExecuteSqlWithParameters(insertBanderSql, insertParameters))
                     {
-                        return Ok($"Thank you {banderForRegistration.Email}! You are now registered :)");
+                        DynamicParameters insertBanderParameters = new DynamicParameters();
+                        string addBanderSql = @"INSERT INTO MicroAgeSchema.Banders 
+                        (FirstName, LastName, Email) 
+                        VALUES (@FirstNameParam, @LastNameParam, @EmailParam)";
+
+                        insertBanderParameters.Add("@FirstNameParam", banderForRegistration.FirstName, DbType.String);
+                        insertBanderParameters.Add("@LastNameParam", banderForRegistration.LastName, DbType.String);
+                        insertBanderParameters.Add("@EmailParam", banderForRegistration.Email, DbType.String);
+
+                        if (_dapper.ExecuteSqlWithParameters(addBanderSql, insertBanderParameters))
+                        {
+                            return Ok($"Thank you {banderForRegistration.Email}! You are now registered :)");
+                        }
+                        return StatusCode(500, "Server failed to create new bander");
+                        
                     }
-                    return StatusCode(500, "Server failed to create new user.");
+                    return StatusCode(500, "Server failed to register new user.");
                 }
                 return StatusCode(409, "Bander with that email already exists.");
             }
@@ -120,5 +135,6 @@ namespace SnatchItAPI.Controllers
                 numBytesRequested: 256 / 8
             );
         }
+
     }
 }
