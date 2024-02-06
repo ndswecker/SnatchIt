@@ -14,6 +14,8 @@ using System.Text;
 namespace SnatchItAPI.Controllers
 {
     [Authorize]
+    [ApiController]
+    [Route("[controller]")]
     public class AuthController : ControllerBase
     {
         private readonly DataContextDapper _dapper;
@@ -86,40 +88,20 @@ namespace SnatchItAPI.Controllers
             });
         }
 
+        
         [HttpGet("RefreshToken")]
         public string RefreshToken()
         {
-            Console.WriteLine("Attempting to refresh a token from ");
-            DynamicParameters sqlParameters = new DynamicParameters();
-            sqlParameters.Add("@BanderIdParam", User.FindFirst("banderId")?.Value, DbType.String );
-            string sqlGetBanderId = "SELECT BanderId FROM MicroAgeSchema.Banders WHERE BanderId = @BanderIdParam";
+            string userIdSql = @"
+                SELECT BanderId FROM MicroAgeSchema.Banders WHERE BanderId = '" +
+                User.FindFirst("banderId")?.Value + "'";
+            
+            int userId = _dapper.LoadDataSingle<int>(userIdSql);
 
-            int banderId = _dapper.LoadDataSingleWithParameters<int>(sqlGetBanderId, sqlParameters);
-
-            return CreateToken(banderId);
+            return CreateToken(userId);
         }
 
-        // private bool SetPassword(BanderForRegistrationDto banderForRegistration)
-        // {
-        //     byte[] passwordSalt = new byte[128 / 8];
-        //     using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
-        //     {
-        //         rng.GetNonZeroBytes(passwordSalt);
-        //     }
-
-        //     byte[] passwordHash = GetPasswordHash(userForSetPassword.Password, passwordSalt);
-
-        //     string sqlAddAuth = "EXEC TutorialAppSchema.spRegistration_Upsert " +
-        //         "@Email = @EmailParam, @PasswordHash = @PasswordHashParam, @PasswordSalt = @PasswordSaltParam";
-                
-        //     DynamicParameters sqlParameters = new DynamicParameters();
-            
-        //     sqlParameters.Add("@EmailParam", userForSetPassword.Email, DbType.String);
-        //     sqlParameters.Add("@PasswordHashParam", passwordHash, DbType.Binary);
-        //     sqlParameters.Add("@PasswordSaltParam", passwordSalt, DbType.Binary);
-
-        //     return _dapper.ExecuteSqlWithParameters(sqlAddAuth, sqlParameters);
-        // }
+        // HELPER METHODS //
 
         private byte[] GetPasswordHash(string password, byte[] passwordSalt)
         {
