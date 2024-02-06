@@ -1,4 +1,5 @@
 using Dapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -12,6 +13,7 @@ using System.Text;
 
 namespace SnatchItAPI.Controllers
 {
+    [Authorize]
     public class AuthController : ControllerBase
     {
         private readonly DataContextDapper _dapper;
@@ -22,6 +24,7 @@ namespace SnatchItAPI.Controllers
             _config = config;
         }
 
+        [AllowAnonymous]
         [HttpPost("Register")]
         public IActionResult Register(BanderForRegistrationDto banderForRegistration)
         {
@@ -35,26 +38,6 @@ namespace SnatchItAPI.Controllers
 
                 if (existingBanders.Count() == 0)
                 {
-                    // byte[] passwordSalt = new byte[128 / 8];
-                    // using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
-                    // {
-                    //     rng.GetNonZeroBytes(passwordSalt);
-                    // }
-
-                    // byte[] passwordHash = GetPasswordHash(banderForRegistration.Password, passwordSalt);
-
-                    // DynamicParameters insertParameters = new DynamicParameters();
-                    // string insertBanderSql = @"INSERT INTO MicroAgeSchema.Auth 
-                    //     ([Email], [PasswordHash], [PasswordSalt]) 
-                    //     VALUES (
-                    //         @EmailParam, @PasswordHashParam, @PasswordSaltParam
-                    //     )";
-
-                    // insertParameters.Add("@EmailParam", banderForRegistration.Email, DbType.String);
-                    // insertParameters.Add("@PasswordHashParam", passwordHash, DbType.Binary);
-                    // insertParameters.Add("@PasswordSaltParam", passwordSalt, DbType.Binary);
-
-                    // if (_dapper.ExecuteSqlWithParameters(insertBanderSql, insertParameters))
                     if (InsertNewAuth(banderForRegistration))
                     {
                         if (InsertNewBander(banderForRegistration))
@@ -71,6 +54,7 @@ namespace SnatchItAPI.Controllers
             return StatusCode(400, "Failure to register new bander, passwords do not match");
         }
 
+        [AllowAnonymous]
         [HttpPost("Login")]
         public IActionResult Login(BanderForLoginDto banderForLogin)
         {
@@ -85,7 +69,6 @@ namespace SnatchItAPI.Controllers
 
             for (int i = 0; i < passwordHash.Length; i++)
             {
-                Console.WriteLine(passwordHash[i] + "-" + banderForConfirmation.PasswordHash[i]);
                 if (passwordHash[i] != banderForConfirmation.PasswordHash[i])
                 {
                     return StatusCode(403, "Incorrect password. Failure to log in.");
@@ -101,6 +84,19 @@ namespace SnatchItAPI.Controllers
             return StatusCode(200, new Dictionary<string, string>{
                         {"token", CreateToken(banderId)}
             });
+        }
+
+        [HttpGet("RefreshToken")]
+        public string RefreshToken()
+        {
+            Console.WriteLine("Attempting to refresh a token from ");
+            DynamicParameters sqlParameters = new DynamicParameters();
+            sqlParameters.Add("@BanderIdParam", User.FindFirst("banderId")?.Value, DbType.String );
+            string sqlGetBanderId = "SELECT BanderId FROM MicroAgeSchema.Banders WHERE BanderId = @BanderIdParam";
+
+            int banderId = _dapper.LoadDataSingleWithParameters<int>(sqlGetBanderId, sqlParameters);
+
+            return CreateToken(banderId);
         }
 
         // private bool SetPassword(BanderForRegistrationDto banderForRegistration)
