@@ -100,7 +100,7 @@ namespace SnatchItAPI.Controllers
 
             return CreateToken(userId);
         }
-
+ 
         // HELPER METHODS //
 
         private byte[] GetPasswordHash(string password, byte[] passwordSalt)
