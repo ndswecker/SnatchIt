@@ -1,9 +1,12 @@
 using Dapper;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using SnatchItAPI.Data;
 using SnatchItAPI.Models;
 using System.Data;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -89,7 +92,15 @@ namespace SnatchItAPI.Controllers
                 }
             }
 
-            return Ok("You have Logged in");
+            DynamicParameters banderIdSqlParameters = new DynamicParameters();
+            banderIdSqlParameters.Add("@EmailParam", banderForLogin.Email, DbType.String);
+            string banderIdSql = "SELECT BanderId FROM MicroAgeSchema.Banders WHERE Email = @EmailParam";
+
+            int banderId = _dapper.LoadDataSingleWithParameters<int>(banderIdSql, banderIdSqlParameters);
+
+            return StatusCode(200, new Dictionary<string, string>{
+                        {"token", CreateToken(banderId)}
+            });
         }
 
         // private bool SetPassword(BanderForRegistrationDto banderForRegistration)
@@ -175,9 +186,32 @@ namespace SnatchItAPI.Controllers
             return false;
         }
 
-        private string CreateToken(int userId)
+        private string CreateToken(int banderId)
         {
-            return "";
+            Claim[] claims = new Claim[] {
+                new Claim("BanderId", banderId.ToString())
+            };
+
+            string? tokenKeyString = _config.GetSection("AppSettings:TokenKey").Value;
+
+            SymmetricSecurityKey tokenKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(tokenKeyString != null ? tokenKeyString : "")
+            );
+
+            SigningCredentials credentials = new SigningCredentials(tokenKey, SecurityAlgorithms.HmacSha512);
+
+            SecurityTokenDescriptor descriptor = new SecurityTokenDescriptor()
+                {
+                    Subject = new ClaimsIdentity(claims),
+                    SigningCredentials = credentials,
+                    Expires = DateTime.Now.AddDays(1)
+                };
+            
+            JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+
+            SecurityToken token = jwtSecurityTokenHandler.CreateToken(descriptor);
+
+            return jwtSecurityTokenHandler.WriteToken(token);
         }
 
     }
