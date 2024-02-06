@@ -26,6 +26,8 @@ builder.Services.AddCors((options) =>
         });
     });
 
+builder.Services.AddAuthentication();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -40,6 +42,9 @@ else
     app.UseCors("ProdCors");
     app.UseHttpsRedirection();
 }
+
+app.UseAuthorization();
+app.UseAuthentication();
 
 app.MapControllers();
 
