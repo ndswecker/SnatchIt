@@ -23,9 +23,17 @@ public class RecordController : ControllerBase
     // </summary>
     // <returns>The current date and time from the database server.</returns>
     [HttpGet("TestConnection")]
-    public DateTime TestConnection()
+    public IActionResult TestConnection()
     {
-        return _dapper.LoadDataSingle<DateTime>("SELECT GETDATE()");
+        try
+        {
+            DateTime dateTime = _dapper.LoadDataSingle<DateTime>("SELECT GETDATE()");
+            return StatusCode(200, dateTime);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "Failed to connect to database");
+        }
     }
 
 
