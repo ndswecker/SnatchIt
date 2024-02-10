@@ -1,8 +1,17 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using dotenv.net;
+
+DotEnv.Load();
 
 var builder = WebApplication.CreateBuilder(args);
+
+string? connectionString = Environment.GetEnvironmentVariable("DefaultConnection");
+string? tokenKeyString = Environment.GetEnvironmentVariable("TokenKey");
+string? passwordKey = Environment.GetEnvironmentVariable("PasswordKey");
+
+// builder.Services.AddControllers();
 
 builder.Services.AddControllers();
 
@@ -23,14 +32,14 @@ builder.Services.AddCors((options) =>
         options.AddPolicy("ProdCors", (corsBuilder) =>
         {
             corsBuilder
-                .WithOrigins("https://myProductionSite.com")
+                .WithOrigins("http://snatchitapi.azurewebsites.net")
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials();
         });
     });
 
-string? tokenKeyString = builder.Configuration.GetSection("AppSettings:TokenKey").Value;
+// string? tokenKeyString = builder.Configuration.GetSection("AppSettings:TokenKey").Value;
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
