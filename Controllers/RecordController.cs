@@ -36,6 +36,12 @@ public class RecordController : ControllerBase
         }
     }
 
+    [HttpGet("TestLive")]
+    public IActionResult TestLive()
+    {
+        return StatusCode(200, "Site is Responsive");
+    }
+
 
     // <summary>
     // Retrieves a collection of CaptureRecord objects from the database.
