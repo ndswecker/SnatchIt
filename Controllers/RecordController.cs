@@ -91,10 +91,8 @@ public class RecordController : ControllerBase
             WHERE SheetId = @SheetIdParam;";
 
         DynamicParameters sqlParameters = new DynamicParameters();
-        sqlParameters = new DynamicParameters();
 
         addCoreFields(sqlParameters, record);
-        sqlParameters.Add("@NotesParam", record.Notes, DbType.String);
 
         sqlParameters.Add("@SheetIdParam", record.SheetId);
 
@@ -115,7 +113,7 @@ public class RecordController : ControllerBase
         DynamicParameters sqlParameters = new DynamicParameters();
 
         string sql = 
-            "INSERT INTO MicroAgeSchema.CORE ([BandNumber],[BandSize],[Scribe]," +
+            "INSERT INTO MicroAgeSchema.CORE ([BandNumber],[BandSize],[Bander],[Scribe]," +
             "[SpeciesCommon],[SpeciesAlpha],[SheetDate], [Station]," +
             "[Net],[WingChord],[Sex],[AgeYear],[AgeWRP],[BodyMass]," +
             "[Notes] ) VALUES (@BandNumberParam, @BandSizeParam, @BanderParam, @ScribeParam, " + 
