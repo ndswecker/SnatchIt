@@ -23,9 +23,23 @@ public class RecordController : ControllerBase
     // </summary>
     // <returns>The current date and time from the database server.</returns>
     [HttpGet("TestConnection")]
-    public DateTime TestConnection()
+    public IActionResult TestConnection()
     {
-        return _dapper.LoadDataSingle<DateTime>("SELECT GETDATE()");
+        try
+        {
+            DateTime dateTime = _dapper.LoadDataSingle<DateTime>("SELECT GETDATE()");
+            return StatusCode(200, dateTime);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "Failed to connect to database");
+        }
+    }
+
+    [HttpGet("TestLive")]
+    public IActionResult TestLive()
+    {
+        return StatusCode(200, "Site is Responsive");
     }
 
 
@@ -83,10 +97,8 @@ public class RecordController : ControllerBase
             WHERE SheetId = @SheetIdParam;";
 
         DynamicParameters sqlParameters = new DynamicParameters();
-        sqlParameters = new DynamicParameters();
 
         addCoreFields(sqlParameters, record);
-        sqlParameters.Add("@NotesParam", record.Notes, DbType.String);
 
         sqlParameters.Add("@SheetIdParam", record.SheetId);
 
@@ -107,7 +119,7 @@ public class RecordController : ControllerBase
         DynamicParameters sqlParameters = new DynamicParameters();
 
         string sql = 
-            "INSERT INTO MicroAgeSchema.CORE ([BandNumber],[BandSize],[Scribe]," +
+            "INSERT INTO MicroAgeSchema.CORE ([BandNumber],[BandSize],[Bander],[Scribe]," +
             "[SpeciesCommon],[SpeciesAlpha],[SheetDate], [Station]," +
             "[Net],[WingChord],[Sex],[AgeYear],[AgeWRP],[BodyMass]," +
             "[Notes] ) VALUES (@BandNumberParam, @BandSizeParam, @BanderParam, @ScribeParam, " + 

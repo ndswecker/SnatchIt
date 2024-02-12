@@ -5,3 +5,11 @@ obj/project.assets.json
 
 obj/
 bin/
+
+myInfo.txt
+
+.env
+
+# Ignore application settings
+appsettings.json
+appsettings.Development.json
