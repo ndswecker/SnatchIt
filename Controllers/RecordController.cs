@@ -1,4 +1,5 @@
 using Dapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SnatchItAPI.Data;
 using SnatchItAPI.Models;
@@ -7,6 +8,7 @@ using System.IO;
 
 namespace SnatchItAPI.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class RecordController : ControllerBase
@@ -22,6 +24,7 @@ public class RecordController : ControllerBase
     // Tests the connection to the database by retrieving the current server date and time.
     // </summary>
     // <returns>The current date and time from the database server.</returns>
+    [AllowAnonymous]
     [HttpGet("TestConnection")]
     public IActionResult TestConnection()
     {
@@ -36,6 +39,7 @@ public class RecordController : ControllerBase
         }
     }
 
+    [AllowAnonymous]
     [HttpGet("TestLive")]
     public IActionResult TestLive()
     {
