@@ -24,3 +24,12 @@ Before you begin, ensure you have the latest version of .NET Core (8.0) installe
 1. Clone the repository to your local machine:
    ```sh
    git clone https://github.com/yourusername/SnatchItAPI.git
+
+### Building & the Application
+
+1. To build the SnatchItAPI for release, use the following command in your command line or terminal:
+   ```sh
+   dotnet build --configuration Release
+2. After building the application, you can deploy it to Azure using the Azure CLI. Change the name to something other than mine. If you haven't already, install the Azure CLI by following the instructions on the official Azure CLI documentation page.With the Azure CLI installed, navigate to your project directory and execute the following command in the Azure Command Prompt:
+   ```sh
+   az webapp up --sku F1 --name SnatchItAPI --os-type linux

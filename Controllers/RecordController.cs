@@ -81,7 +81,7 @@ public class RecordController : ControllerBase
     
     
     [HttpGet("GetRecordSingle")]
-    public IActionResult GetRecordSingle(int sheetId, string jwtToken)
+    public IActionResult GetRecordSingle(int sheetId)
     {
         try
         {
