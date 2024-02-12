@@ -79,8 +79,9 @@ public class RecordController : ControllerBase
         return records;
     }
     
+    
     [HttpGet("GetRecordSingle")]
-    public IActionResult GetRecordSingle(int sheetId)
+    public IActionResult GetRecordSingle(int sheetId, string jwtToken)
     {
         try
         {
@@ -201,4 +202,29 @@ public class RecordController : ControllerBase
         sqlParameters.Add("@BodyMassParam", record.BodyMass, DbType.Decimal);
         sqlParameters.Add("@NotesParam", record.Notes, DbType.String);
     } 
+
+    // Helper method to create an HTTP request with JWT token
+    // [ApiExplorerSettings(IgnoreApi = true)]
+    // private async Task<IActionResult> TestGetRecordSingleWithJwt(int sheetId, string jwtToken)
+    // {
+    //     try
+    //     {
+    //         var requestUrl = $"{_apiBaseUrl}/[controller]/GetRecordSingle?sheetId={sheetId}";
+    //         var requestMessage = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+    //         requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwtToken);
+
+    //         var response = await _httpClient.SendAsync(requestMessage);
+    //         if (response.IsSuccessStatusCode)
+    //         {
+    //             var content = await response.Content.ReadAsStringAsync();
+    //             return Ok(content); // You might need to deserialize the response
+    //         }
+
+    //         return StatusCode((int)response.StatusCode, "Failed to get record.");
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         return StatusCode(500, $"An error occurred: {ex.Message}");
+    //     }
+    // }
 }
