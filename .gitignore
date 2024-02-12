@@ -9,3 +9,7 @@ bin/
 myInfo.txt
 
 .env
+
+# Ignore application settings
+appsettings.json
+appsettings.Development.json
