@@ -52,7 +52,7 @@ public class RecordController : ControllerBase
     // </remarks>
     // <param name="sheetId">The ID of the sheet used to filter records. If 0 or not provided, all records are retrieved.</param>
     // <returns>An IEnumerable of CaptureRecord objects, either filtered by sheetId or containing all records.</returns>
-    [HttpGet("getRecords")]
+    [HttpGet("GetRecords")]
     public IEnumerable<CaptureRecord> GetRecords(int sheetId = 0){
 
 
@@ -74,6 +74,37 @@ public class RecordController : ControllerBase
         IEnumerable<CaptureRecord> records = _dapper.LoadDataWithParameters<CaptureRecord>(sql, sqlParameters);
         return records;
     }
+    
+    [HttpGet("GetRecordSingle")]
+    public IActionResult GetRecordSingle(int sheetId)
+    {
+        try
+        {
+            if (sheetId <= 0)
+            {
+                return BadRequest("Invalid SheetId.");
+            }
+
+            DynamicParameters sqlParameters = new DynamicParameters();
+            sqlParameters.Add("@SheetIdParam", sheetId, DbType.Int32);
+
+            string sql = "SELECT * FROM MicroAgeSchema.Core AS Core WHERE Core.SheetId = @SheetIdParam";
+
+            CaptureRecord records = _dapper.LoadDataSingleWithParameters<CaptureRecord>(sql, sqlParameters);
+
+            if (records == null)
+            {
+                return NotFound($"No records found for sheetId {sheetId}");
+            }
+
+            return Ok(records);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, $"An Error occured while processing your request for record of sheetId {sheetId}");
+        }
+    }
+
 
     [HttpPut("EditRecord")]
     public IActionResult EditRecord(CaptureRecord record)
