@@ -105,9 +105,9 @@ namespace SnatchItAPI.Controllers
 
         private byte[] GetPasswordHash(string password, byte[] passwordSalt)
         {
-            // string passwordSaltPlusString = _config.GetSection("AppSettings:PasswordKey").Value +
-            //     Convert.ToBase64String(passwordSalt);
-            string passwordSaltPlusString = Environment.GetEnvironmentVariable("PasswordKey") +
+            string passwordSaltPlusString = _config.GetSection("AppSettings:PasswordKey").Value +
+                Convert.ToBase64String(passwordSalt);
+            // string passwordSaltPlusString = Environment.GetEnvironmentVariable("PasswordKey") +
                 Convert.ToBase64String(passwordSalt);
 
             return KeyDerivation.Pbkdf2(
@@ -172,8 +172,8 @@ namespace SnatchItAPI.Controllers
                 new Claim("BanderId", banderId.ToString())
             };
 
-            // string? tokenKeyString = _config.GetSection("AppSettings:TokenKey").Value;
-            string? tokenKeyString = Environment.GetEnvironmentVariable("TokenKey") ?? "Your fallback connection string here";
+            string? tokenKeyString = _config.GetSection("AppSettings:TokenKey").Value;
+            // string? tokenKeyString = Environment.GetEnvironmentVariable("TokenKey") ?? "Your fallback connection string here";
 
             SymmetricSecurityKey tokenKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(tokenKeyString != null ? tokenKeyString : "")
