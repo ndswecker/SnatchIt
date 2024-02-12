@@ -2,13 +2,13 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
-DotNetEnv.Env.Load();
+// DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-string? connectionString = Environment.GetEnvironmentVariable("DefaultConnection");
-string? tokenKeyString = Environment.GetEnvironmentVariable("TokenKey");
-string? passwordKey = Environment.GetEnvironmentVariable("PasswordKey");
+// string? connectionString = Environment.GetEnvironmentVariable("DefaultConnection");
+// string? tokenKeyString = Environment.GetEnvironmentVariable("TokenKey");
+// string? passwordKey = Environment.GetEnvironmentVariable("PasswordKey");
 
 // builder.Services.AddControllers();
 
@@ -38,7 +38,7 @@ builder.Services.AddCors((options) =>
         });
     });
 
-// string? tokenKeyString = builder.Configuration.GetSection("AppSettings:TokenKey").Value;
+string? tokenKeyString = builder.Configuration.GetSection("AppSettings:TokenKey").Value;
 // string? tokenKeyString = Environment.GetEnvironmentVariable("TokenKey");
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
