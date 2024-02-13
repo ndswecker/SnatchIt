@@ -1,8 +1,8 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using SnatchItAPI.Data;
 
-// DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,4 +1,6 @@
+using Azure.Identity;
 using Microsoft.AspNetCore.Mvc;
+using SnatchItAPI.Data;
 
 namespace SnatchItAPI.Controllers
 {
@@ -6,9 +8,18 @@ namespace SnatchItAPI.Controllers
     [Route("[controller]")]
     public class FilesController : ControllerBase
     {
-        [HttpGet("GetFiles")]
+        private readonly AzureBlobService _blobService;
+        private readonly IConfiguration _config;
+        public FilesController(IConfiguration config)
+        {
+            _blobService = new AzureBlobService(config);
+            _config = config;
+        }
+
+        [HttpGet("ListAllBlobs")]
         public async Task<IActionResult> ListAllBlobs()
         {
+            await _blobService.ListBlobContainersAsync();
             return Ok();
         }
 
