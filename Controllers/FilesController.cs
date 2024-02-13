@@ -18,8 +18,14 @@ namespace SnatchItAPI.Controllers
             return Ok();
         }
 
-        [HttpGet("DownloadFile")]
+        [HttpGet("filename")]
         public async Task<IActionResult> Download(string filename)
+        {
+            return Ok();
+        }
+
+        [HttpDelete("filename")]
+        public async Task<IActionResult> Delete(string filename)
         {
             return Ok();
         }
