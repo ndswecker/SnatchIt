@@ -6,12 +6,6 @@ using SnatchItAPI.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// string? connectionString = Environment.GetEnvironmentVariable("DefaultConnection");
-// string? tokenKeyString = Environment.GetEnvironmentVariable("TokenKey");
-// string? passwordKey = Environment.GetEnvironmentVariable("PasswordKey");
-
-// builder.Services.AddControllers();
-
 builder.Services.AddControllers();
 
 // Add services to the container.
