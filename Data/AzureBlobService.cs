@@ -62,4 +62,20 @@ public class AzureBlobService
         return blobUris;
     }
 
+    public async Task<Stream> DownloadFileAsync(string fileName)
+        {
+            var blobContainer = _blobServiceClient.GetBlobContainerClient("democontainer");
+            var blobClient = blobContainer.GetBlobClient(fileName);
+
+            if (await blobClient.ExistsAsync())
+            {
+                var downloadInfo = await blobClient.DownloadAsync();
+                return downloadInfo.Value.Content;
+            }
+            else
+            {
+                throw new FileNotFoundException("Blob not found", fileName);
+            }
+        }
+
 }

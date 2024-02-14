@@ -1,4 +1,5 @@
 using Azure.Identity;
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Mvc;
 using SnatchItAPI.Data;
 
@@ -10,6 +11,7 @@ namespace SnatchItAPI.Controllers
     {
         private readonly AzureBlobService _blobService;
         private readonly IConfiguration _config;
+        
         public FilesController(IConfiguration config)
         {
             _blobService = new AzureBlobService(config);
@@ -54,11 +56,33 @@ namespace SnatchItAPI.Controllers
             }
         }
 
-        [HttpGet("filename")]
+        [HttpGet("Download/{filename}")]
         public async Task<IActionResult> Download(string filename)
         {
-            return Ok();
+            try
+            {
+                var fileStream = await _blobService.DownloadFileAsync(filename);
+
+                if (fileStream == null)
+                {
+                    return NotFound();
+                }
+
+                // Return the file stream as a file result to download
+                return File(fileStream, "application/octet-stream", filename);
+            }
+            catch (FileNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                Console.WriteLine(ex.Message);
+                return StatusCode(500, "An error occurred while attempting to download the file.");
+            }
         }
+        
 
         [HttpDelete("filename")]
         public async Task<IActionResult> Delete(string filename)
