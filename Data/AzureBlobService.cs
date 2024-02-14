@@ -1,5 +1,6 @@
 using Azure.Storage;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using SnatchItAPI.Models;
 
 namespace SnatchItAPI.Data;
@@ -33,6 +34,20 @@ public class AzureBlobService
         }
         return containerDtos;
     }
+
+    public async Task<IEnumerable<Uri>> ListBlobUrisAsync()
+        {
+            var blobUris = new List<Uri>();
+            var blobContainer = _blobServiceClient.GetBlobContainerClient("democontainer");
+
+            await foreach (BlobItem blobItem in blobContainer.GetBlobsAsync())
+            {
+                var blobClient = blobContainer.GetBlobClient(blobItem.Name);
+                blobUris.Add(blobClient.Uri);
+            }
+
+            return blobUris;
+        }
 
 
     public async Task<List<Uri>> UploadFilesAsync(Stream fileStream, string fileName)

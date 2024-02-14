@@ -16,20 +16,29 @@ namespace SnatchItAPI.Controllers
             _config = config;
         }
 
-        [HttpGet("ListAllBlobs")]
-        public async Task<IActionResult> ListAllBlobs()
+        [HttpGet("ListAllContainers")]
+        public async Task<IActionResult> ListAllContainers()
         {
             var containerDtos = await _blobService.ListBlobContainersAsync();
             return Ok(containerDtos);
         }
 
+        [HttpGet("ListAllBlobs")]
+        public async Task<IActionResult> ListAllBlobs()
+        {
+            try
+            {
+                var blobUris = await _blobService.ListBlobUrisAsync();
+                return Ok(blobUris);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception, adjust logging based on your setup
+                Console.WriteLine(ex.Message);
+                return StatusCode(500, "An error occurred while attempting to list blobs.");
+            }
+        }
 
-        // [HttpPost("UploadFile")]
-        // public async Task<IActionResult> Upload(IFormFile file)
-        // {
-        //     var loadedUri = await _blobService.UploadFilesAsync();
-        //     return Ok(loadedUri);
-        // }
         [HttpPost("UploadFile")]
         public async Task<IActionResult> Upload(IFormFile file)
         {
