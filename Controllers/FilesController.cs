@@ -84,7 +84,7 @@ namespace SnatchItAPI.Controllers
         }
         
 
-        [HttpDelete("{filename}")]
+        [HttpDelete("Delete/{filename}")]
         public async Task<IActionResult> Delete(string filename)
         {
             try
