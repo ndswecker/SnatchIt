@@ -84,10 +84,25 @@ namespace SnatchItAPI.Controllers
         }
         
 
-        [HttpDelete("filename")]
+        [HttpDelete("{filename}")]
         public async Task<IActionResult> Delete(string filename)
         {
-            return Ok();
+            try
+            {
+                bool isDeleted = await _blobService.DeleteFileAsync(filename);
+                if (isDeleted)
+                {
+                    return Ok($"File {filename} has be successfully deleted. ");
+                }
+                else{
+                    return NotFound($"File {filename} could not be found. Deletion failed");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failure to find file {filename}: \n {ex.Message} \n");
+                return StatusCode(500, $"Internal error, could not delete {filename}");
+            }
         }
     }
 }

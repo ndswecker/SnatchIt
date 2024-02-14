@@ -63,19 +63,34 @@ public class AzureBlobService
     }
 
     public async Task<Stream> DownloadFileAsync(string fileName)
-        {
-            var blobContainer = _blobServiceClient.GetBlobContainerClient("democontainer");
-            var blobClient = blobContainer.GetBlobClient(fileName);
+    {
+        var blobContainer = _blobServiceClient.GetBlobContainerClient("democontainer");
+        var blobClient = blobContainer.GetBlobClient(fileName);
 
-            if (await blobClient.ExistsAsync())
-            {
-                var downloadInfo = await blobClient.DownloadAsync();
-                return downloadInfo.Value.Content;
-            }
-            else
-            {
-                throw new FileNotFoundException("Blob not found", fileName);
-            }
+        if (await blobClient.ExistsAsync())
+        {
+            var downloadInfo = await blobClient.DownloadAsync();
+            return downloadInfo.Value.Content;
         }
+        else
+        {
+            throw new FileNotFoundException("Blob not found", fileName);
+        }
+    }
+
+    public async Task<bool> DeleteFileAsync(string fileName)
+    {
+        var blobContainer = _blobServiceClient.GetBlobContainerClient("democontainer");
+        var blobClient = blobContainer.GetBlobClient(fileName);
+
+        if (await blobClient.ExistsAsync())
+        {
+            await blobClient.DeleteAsync();
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 
 }
