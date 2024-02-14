@@ -24,10 +24,25 @@ namespace SnatchItAPI.Controllers
         }
 
 
+        // [HttpPost("UploadFile")]
+        // public async Task<IActionResult> Upload(IFormFile file)
+        // {
+        //     var loadedUri = await _blobService.UploadFilesAsync();
+        //     return Ok(loadedUri);
+        // }
         [HttpPost("UploadFile")]
         public async Task<IActionResult> Upload(IFormFile file)
         {
-            return Ok();
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("File is not selected or empty.");
+            }
+
+            using (var stream = file.OpenReadStream())
+            {
+                var loadedUri = await _blobService.UploadFilesAsync(stream, file.FileName);
+                return Ok(loadedUri);
+            }
         }
 
         [HttpGet("filename")]
