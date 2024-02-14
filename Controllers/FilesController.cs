@@ -19,9 +19,10 @@ namespace SnatchItAPI.Controllers
         [HttpGet("ListAllBlobs")]
         public async Task<IActionResult> ListAllBlobs()
         {
-            await _blobService.ListBlobContainersAsync();
-            return Ok();
+            var containerDtos = await _blobService.ListBlobContainersAsync();
+            return Ok(containerDtos);
         }
+
 
         [HttpPost("UploadFile")]
         public async Task<IActionResult> Upload(IFormFile file)
